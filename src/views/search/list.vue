@@ -18,9 +18,9 @@
 
     <!-- 排序选项按钮 -->
     <div class="sort-btns">
-      <div class="sort-item">综合</div>
-      <div class="sort-item">销量</div>
-      <div class="sort-item">价格</div>
+      <div class="sort-item" @click="selectSortType('all')">综合</div>
+      <div class="sort-item" @click="selectSortType('sales')">销量</div>
+      <div class="sort-item" @click="selectSortType('price')">价格</div>
     </div>
 
     <div class="goods-list">
@@ -32,6 +32,7 @@
 <script>
 import GoodsItem from '@/components/GoodsItem.vue'
 import {getProList} from "@/api/product";
+import login from "@/views/login/index.vue";
 
 export default {
   name: 'SearchIndex',
@@ -41,7 +42,8 @@ export default {
   data() {
     return {
       page: 1,
-      proList: []
+      proList: [],
+      sortType:''
     }
   },
   computed: {
@@ -49,8 +51,21 @@ export default {
       return this.$route.query.search
     }
   },
+  methods:{
+   async selectSortType(type){
+      const {data: {list}}=await getProList({
+        sortType:type,
+        categoryId: this.$route.query.categoryId,
+        goodsName: this.querySearch,
+        page: this.page
+      })
+     console.log({data:{list}})
+     this.proList = list.data
+    }
+  },
   async created() {
     const {data: {list}} = await getProList({
+      sortType:this.sortType,
       categoryId: this.$route.query.categoryId,
       goodsName: this.querySearch,
       page: this.page
